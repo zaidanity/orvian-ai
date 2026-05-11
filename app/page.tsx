@@ -7,6 +7,21 @@ import ChatInput from "./components/ChatInput";
 import ModelSelector from "./components/ModelSelector";
 import { Menu } from "lucide-react";
 
+interface Session {
+  id: string;
+  title: string;
+  messages: Message[];
+  isPinned?: boolean;
+}
+
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  imageData?: string;
+}
+
+// Daftar model yang tersedia
 export const AVAILABLE_MODELS = [
   { id: "openai/gpt-oss-120b", name: "GPT OSS 120B", description: "Paling cerdas, untuk coding & reasoning" },
   { id: "openai/gpt-oss-20b", name: "GPT OSS 20B", description: "Seimbang, cepat & cerdas" },
@@ -25,7 +40,57 @@ export default function Home() {
   const [desktopSidebarOpen, setDesktopSidebarOpen] = useState(true);
   const [selectedModel, setSelectedModel] = useState<ModelId>("llama-3.1-8b-instant");
 
-  // ... kode lainnya tetap sama ...
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    loadSessions();
+    return () => window.removeEventListener("resize", check);
+  }, []);
+
+  const loadSessions = async () => {
+    const res = await fetch("/api/sessions");
+    const data = await res.json();
+    setSessions(data.sessions);
+    setActiveId(data.activeSessionId);
+  };
+
+  const createSession = async () => {
+    const res = await fetch("/api/sessions", { method: "POST" });
+    const data = await res.json();
+    setSessions(data.sessions);
+    setActiveId(data.activeSessionId);
+    setMobileMenuOpen(false);
+  };
+
+  const selectSession = async (id: string) => {
+    await fetch(`/api/sessions/${id}`, { method: "PUT" });
+    setActiveId(id);
+    setMobileMenuOpen(false);
+  };
+
+  const deleteSession = async (id: string) => {
+    await fetch(`/api/sessions?id=${id}`, { method: "DELETE" });
+    await loadSessions();
+  };
+
+  const editSessionTitle = async (id: string, newTitle: string) => {
+    await fetch("/api/sessions/edit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, title: newTitle }),
+    });
+    setSessions(prev => prev.map(s => s.id === id ? { ...s, title: newTitle } : s));
+  };
+
+  const pinSession = async (id: string, isPinned: boolean) => {
+    await fetch("/api/sessions/pin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, isPinned }),
+    });
+    setSessions(prev => prev.map(s => s.id === id ? { ...s, isPinned } : s));
+  };
 
   const sendMessage = async (message: string, imageBase64?: string) => {
     let id = activeId;
@@ -41,12 +106,11 @@ export default function Home() {
     await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      // ✅ Kirim model yang dipilih user
       body: JSON.stringify({ 
         sessionId: id, 
         message, 
         imageBase64,
-        model: selectedModel  // <-- INI BARU
+        model: selectedModel
       }),
     });
     await loadSessions();
@@ -61,15 +125,37 @@ export default function Home() {
 
   return (
     <div className="flex h-screen bg-[#0a0a0a]">
-      {/* Sidebar (desktop & mobile) - tidak berubah */}
+      {/* Desktop Sidebar */}
       <div className="hidden md:block">
-        <Sidebar ... />
+        <Sidebar
+          sessions={sessions}
+          activeId={activeId}
+          onNewChat={createSession}
+          onSelect={selectSession}
+          onDelete={deleteSession}
+          onEdit={editSessionTitle}
+          onPin={pinSession}
+          onClose={toggleDesktopSidebar}
+          isMobile={false}
+          isOpen={desktopSidebarOpen}
+        />
       </div>
 
+      {/* Mobile Sidebar */}
       {isMobile && mobileMenuOpen && (
         <div className="fixed inset-0 z-50 flex">
           <div className="w-72 h-full">
-            <Sidebar ... />
+            <Sidebar
+              sessions={sessions}
+              activeId={activeId}
+              onNewChat={createSession}
+              onSelect={selectSession}
+              onDelete={deleteSession}
+              onEdit={editSessionTitle}
+              onPin={pinSession}
+              onClose={() => setMobileMenuOpen(false)}
+              isMobile={true}
+            />
           </div>
           <div className="flex-1 bg-black/60" onClick={() => setMobileMenuOpen(false)} />
         </div>
@@ -77,33 +163,36 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header dengan Model Selector */}
-        <header className="sticky top-0 z-10 border-b border-[#2a2a2a] bg-[#0a0a0a]/95 backdrop-blur-sm px-4 py-3 flex items-center justify-between">
+        {/* Header */}
+        <header className="sticky top-0 z-10 border-b border-[#2a2a2a] bg-[#0a0a0a]/95 backdrop-blur-sm px-3 py-2 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {isMobile && (
-              <button onClick={() => setMobileMenuOpen(true)} className="mr-3 text-gray-400 hover:text-white p-1">
-                <Menu className="h-5 w-5" />
+              <button
+                onClick={() => setMobileMenuOpen(true)}
+                className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-[#1a1a1a] transition"
+              >
+                <Menu className="h-4 w-4" />
               </button>
             )}
             {!isMobile && !desktopSidebarOpen && (
-              <button onClick={toggleDesktopSidebar} className="mr-3 text-gray-400 hover:text-white p-1 rounded-md hover:bg-[#1a1a1a] transition">
-                <Menu className="h-5 w-5" />
+              <button
+                onClick={toggleDesktopSidebar}
+                className="text-gray-400 hover:text-white p-1 rounded-md hover:bg-[#1a1a1a] transition"
+                title="Buka sidebar"
+              >
+                <Menu className="h-4 w-4" />
               </button>
             )}
-            <h1 className="text-sm font-medium text-gray-300 truncate">
+            <h1 className="text-sm font-medium text-gray-300 truncate max-w-[150px] md:max-w-none">
               {activeSession?.title || "ORVIAN AI"}
             </h1>
           </div>
 
-          {/* ✅ Model Selector di pojok kanan */}
-          <ModelSelector 
-            selectedModel={selectedModel} 
-            onModelChange={setSelectedModel} 
-          />
+          <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
         </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" key={activeId}>
           <MessageList messages={activeSession?.messages || []} isLoading={isLoading} />
         </div>
 
