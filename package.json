@@ -1,0 +1,28 @@
+{
+  "name": "orvian-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "14.2.28",
+    "react": "^18",
+    "react-dom": "^18",
+    "groq-sdk": "^0.3.0",
+    "react-markdown": "^9.0.1",
+    "lucide-react": "^0.394.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38"
+  }
+}
