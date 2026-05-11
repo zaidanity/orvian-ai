@@ -58,8 +58,17 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </div>
               )}
-              <div className="prose prose-sm max-w-none">
-                <ReactMarkdown>{m.content}</ReactMarkdown>
+              <div className="prose prose-sm max-w-none prose-invert">
+                <ReactMarkdown
+                  components={{
+                    ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2" {...props} />,
+                    li: ({ node, ...props }) => <li className="my-1" {...props} />,
+                    p: ({ node, ...props }) => <p className="my-1" {...props} />,
+                  }}
+                >
+                  {m.content}
+                </ReactMarkdown>
               </div>
               <button
                 onClick={() => handleCopy(m.id, m.content)}
@@ -73,7 +82,7 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
               </button>
             </div>
           ) : (
-            // AI message - tanpa bubble, langsung teks
+            // AI message - tanpa bubble, langsung teks dengan format list yang benar
             <div className="max-w-[85%] text-gray-200">
               {m.imageData && (
                 <div className="mb-2">
@@ -84,8 +93,17 @@ export default function MessageList({ messages, isLoading }: MessageListProps) {
                   />
                 </div>
               )}
-              <div className="prose prose-sm max-w-none">
-                <ReactMarkdown>{m.content}</ReactMarkdown>
+              <div className="prose prose-sm max-w-none prose-invert">
+                <ReactMarkdown
+                  components={{
+                    ol: ({ node, ...props }) => <ol className="list-decimal pl-5 my-2" {...props} />,
+                    ul: ({ node, ...props }) => <ul className="list-disc pl-5 my-2" {...props} />,
+                    li: ({ node, ...props }) => <li className="my-1" {...props} />,
+                    p: ({ node, ...props }) => <p className="my-1" {...props} />,
+                  }}
+                >
+                  {m.content}
+                </ReactMarkdown>
               </div>
               <button
                 onClick={() => handleCopy(m.id, m.content)}
