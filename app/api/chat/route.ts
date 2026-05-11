@@ -4,7 +4,7 @@ import { generateChatResponse, analyzeImage, cleanMarkdown } from "@/lib/ai";
 
 export async function POST(request: NextRequest) {
   try {
-    const { sessionId, message, imageBase64 } = await request.json();
+    const { sessionId, message, imageBase64, model } = await request.json();
     
     if (!sessionId) {
       return NextResponse.json({ error: "Session ID required" }, { status: 400 });
@@ -18,14 +18,16 @@ export async function POST(request: NextRequest) {
     let userMessage = message || "";
     let aiResponse = "";
     
+    // KALAU ADA GAMBAR → PAKAI GEMINI (AUTOMATIS)
     if (imageBase64) {
       const prompt = message || "Deskripsikan gambar ini dalam bahasa Indonesia.";
       aiResponse = await analyzeImage(imageBase64, prompt);
       userMessage = message ? `[Gambar] ${message}` : "[Gambar] Deskripsikan gambar ini";
     }
+    // CHAT TEKS → PAKAI MODEL YANG DIPILIH USER
     else if (message && message.trim()) {
       const history = formatHistoryForAI(session.messages);
-      aiResponse = await generateChatResponse(message, history);
+      aiResponse = await generateChatResponse(message, history, model);
       userMessage = message;
     }
     else {
