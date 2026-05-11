@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
-import { AVAILABLE_MODELS, ModelId } from "@/app/page";
+import { AVAILABLE_MODELS, ModelId } from "@/lib/models";
 
 interface ModelSelectorProps {
   selectedModel: ModelId;
