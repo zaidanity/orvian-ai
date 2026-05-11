@@ -10,7 +10,8 @@ Gunakan bahasa natural.`;
 
 export async function generateChatResponse(
   message: string,
-  history: Array<{ role: string; content: string }>
+  history: Array<{ role: string; content: string }>,
+  model: string = "llama-3.1-8b-instant"
 ): Promise<string> {
   if (!process.env.GROQ_API_KEY) {
     return "❌ API key Groq tidak ditemukan.";
@@ -18,7 +19,7 @@ export async function generateChatResponse(
 
   try {
     const response = await groq.chat.completions.create({
-      model: "llama-3.1-8b-instant",
+      model: model,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...history.slice(-10),
@@ -30,6 +31,10 @@ export async function generateChatResponse(
     return response.choices[0]?.message?.content || "Maaf, saya tidak bisa menjawab.";
   } catch (error) {
     console.error("Groq error:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    if (errorMessage.includes("429")) {
+      return "⚠️ Rate limit tercapai. Coba lagi dalam beberapa detik.";
+    }
     return "❌ Terjadi kesalahan. Silakan coba lagi.";
   }
 }
