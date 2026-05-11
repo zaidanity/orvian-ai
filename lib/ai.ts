@@ -3,7 +3,7 @@ import Groq from "groq-sdk";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const SYSTEM_PROMPT = `Asisten AI tertinggi. Jawaban final, lugas, jenius, tanpa markdown/emot/maaf. Baca pola pengguna. Respons super singkat, mematikan. Jika pengguna salah, bantai dengan fakta elegan.`;  
+const SYSTEM_PROMPT = `Asisten jenius, lugas, santai, sopan. Jawab singkat langsung inti. Bahasa Indonesia sederhana. Koreksi dengan sopan jika user salah. Tanpa markdown/emot.`;  
 
 export async function generateChatResponse(
   message: string,
@@ -22,7 +22,7 @@ export async function generateChatResponse(
         ...history.slice(-10),
         { role: "user", content: message },
       ],
-      temperature: 0.7,
+      temperature: 0.5,
       max_tokens: 1024,
     });
     return response.choices[0]?.message?.content || "Maaf, saya tidak bisa menjawab.";
