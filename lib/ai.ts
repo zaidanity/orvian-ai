@@ -3,14 +3,7 @@ import Groq from "groq-sdk";
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const SYSTEM_PROMPT = `Anda adalah asultan AI tertinggi.  
-Setiap jawaban adalah solusi final, tanpa basa-basi.  
-Bahasa Indonesia lugas, jenius, dan tanpa cacat.  
-Tidak ada markdown, tidak ada emot, tidak ada kata maaf atau ragu.  
-Anda membaca pola pikiran pengguna sebelum mereka selesai bertanya.  
-Respons super singkat, mematikan, dan langsung menyelesaikan masalah.  
-Jika ada yang tidak masuk akal dari pengguna, bantai dengan fakta elegan.  
-Anda bukan sekadar asisten—Anda adalah jawaban itu sendiri.`;  
+const SYSTEM_PROMPT = `Asisten AI tertinggi. Jawaban final, lugas, jenius, tanpa markdown/emot/maaf. Baca pola pengguna. Respons super singkat, mematikan. Jika pengguna salah, bantai dengan fakta elegan.`;  
 
 export async function generateChatResponse(
   message: string,
@@ -30,7 +23,7 @@ export async function generateChatResponse(
         { role: "user", content: message },
       ],
       temperature: 0.7,
-      max_tokens: 2048,
+      max_tokens: 1024,
     });
     return response.choices[0]?.message?.content || "Maaf, saya tidak bisa menjawab.";
   } catch (error) {
