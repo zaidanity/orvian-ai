@@ -49,10 +49,6 @@
 | **[Lucide Icons](https://lucide.dev/)** | Ikon modern & minimalis |
 | **[React Markdown](https://github.com/remarkjs/react-markdown)** | Render markdown dari AI |
 
-## 🚀 Demo Live
-
-🔗 [**orvianai.vercel.app**](https://orvianai.vercel.app/)
-
 ## 📦 Instalasi Lokal
 
 ### Prasyarat
@@ -114,31 +110,15 @@ Orvian-AI/
 
 🎯 Fitur yang Akan Datang
 
-· Database permanen (Vercel Postgres)
-· Login multi-user (NextAuth.js)
-· Export chat ke PDF/TXT
-· Pencarian riwayat chat
-· Shortcut keyboard (Ctrl+K, Ctrl+N)
-
-🤝 Kontribusi
-
-Karena ini project pribadi, kontribusi tidak dibuka. Tapi saran dan ide selalu welcome!
-
-📄 Lisensi
-
-© 2026 ZDN1SM. All rights reserved.
-
-🔗 Link Penting
-
-Link Tujuan
-Live Demo Website Orvian AI
-Groq Console Dapatkan API key Groq
-Google AI Studio Dapatkan API key Gemini
-
----
+- Database permanen (Vercel Postgres)
+- Login multi-user (NextAuth.js)
+- Export chat ke PDF/TXT
+- Pencarian riwayat chat
+- Shortcut keyboard (Ctrl+K, Ctrl+N)
 
 <div align="center">
-
 Built with 🚀 by ZAIDANITY
-
+</div>
+<div align="center">
+© 2026 ZDN1SM. All rights reserved.
 </div>
